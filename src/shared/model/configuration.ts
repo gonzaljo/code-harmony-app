@@ -1,29 +1,31 @@
-export interface IConfiguration {
-  ids: number[]
-  languages: string[]
-  textvariants: string[]
+
+export interface TextVariant {
+  id: string
+  mimeType: string
+  length: number
+  default: boolean
 }
 
-export class Configuration implements IConfiguration {
-  private _ids: number[]
-  private _languages: string[]
-  private _textvariants: string[]
+export interface TextConfig {
+  id: string
+  format: string,
+  message: string
+}
 
-  constructor(ids: number[], languages: string[], textvariants: string[]) {
-    this._ids = ids
-    this._languages = languages
-    this._textvariants = textvariants
-  }
+export interface Group {
+  id: string
+  description: string
+}
 
-  get ids(): number[] {
-    return this._ids
-  }
+export interface Language {
+  id: string
+  description: string
+  defuault: boolean
+}
 
-  get languages(): string[] {
-    return this._languages
-  }
-
-  get textvariants(): string[] {
-    return this._textvariants
-  }
+export interface Configuration {
+  textVariants: TextVariant[]
+  textConfigs: TextConfig[]
+  groups: Group[]
+  languages: Language[]
 }
