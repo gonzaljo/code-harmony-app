@@ -1,4 +1,3 @@
-
 // Model Interface
 export interface IModel {
   getGuid(): string
@@ -13,8 +12,8 @@ export class Model {
   private validFrom: Date
 
   constructor(guid: string, id: string, validFrom: Date) {
-    this.guid = guid;
-    this.id = id;
+    this.guid = guid
+    this.id = id
     this.validFrom = validFrom
   }
 

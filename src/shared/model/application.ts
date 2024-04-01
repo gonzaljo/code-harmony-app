@@ -1,29 +1,28 @@
-import { Configuration } from './configuration'
-
+import { IConfiguration } from './configuration'
 
 /**
  * A container for the Configuration and the Application
  */
-export interface CodeHarmony {
-  configuration: Configuration
-  application: Application
+export interface ICodeHarmony {
+  path: string | undefined
+  configuration: IConfiguration
+  //application: IApplication
 }
 
-/**
- * The Application contains all the other parts of the model
- */
-export interface Application extends Identifyable, TextEnabled {
-  id: string
-  textElements?: TextElement[]
-  codes?: Code[]
-  intRelations?: IntRelations[]
-  extRelations?: ExtRelations[]
+export const codeHarmonyFactory = (
+  path: string | undefined,
+  configuration: IConfiguration
+): ICodeHarmony => {
+  return {
+    path,
+    configuration
+  }
 }
 
 /**
  * A container for for TextFragments
  */
-export interface TextElement extends GlobalElement {
+export interface ITextElement extends IGlobalElement {
   id: string
   textConfig: string
 }
@@ -31,7 +30,7 @@ export interface TextElement extends GlobalElement {
 /**
  * This interface is a Textfragment, which will be used for TextEnabled objects
  */
-export interface Textfragment extends Identifyable, Groupable {
+export interface ITextfragment extends IVersionable, IGroupable {
   id: string
   textVariant: string
   locale: string
@@ -41,15 +40,15 @@ export interface Textfragment extends Identifyable, Groupable {
 /**
  * A Code with a list of Values
  */
-export interface Code extends GlobalElement {
+export interface ICode extends IGlobalElement {
   id: string
-  values?: Value[] | undefined
+  values?: IValue[] | undefined
 }
 
 /**
  * A single value of a Code
  */
-export interface Value extends GlobalElement {
+export interface IValue extends IGlobalElement {
   id: number
   indentification: string | undefined
 }
@@ -57,17 +56,17 @@ export interface Value extends GlobalElement {
 /**
  * A relation between two Codes containing IntRelations
  */
-export interface IntRelations extends GlobalElement {
+export interface IRelations extends IGlobalElement {
   id: string
   fromCode: string
   toCode: string
-  relations?: IntRelation[]
+  relations?: IRelation[]
 }
 
 /**
  * A relation between two Values of a Code
  */
-export interface IntRelation extends Validity {
+export interface IRelation extends IValidity {
   from: number
   to: number
 }
@@ -75,20 +74,20 @@ export interface IntRelation extends Validity {
 /**
  * A relation between two Codes, one of this Application and one of an external System, containing ExtRelations
  */
-export interface ExtRelations extends GlobalElement {
+export interface IExtRelations extends IGlobalElement {
   id: string
   idExternal: string
   externalSystem: string
   externalCode: string
   format: string
   length: number
-  relations?: ExtRelation[]
+  relations?: IExtRelation[]
 }
 
 /**
  * A relation between a Value and an external System Code
  */
-export interface ExtRelation {
+export interface IExtRelation {
   code: number
   externalCode: string | number
   valid: boolean
@@ -97,14 +96,14 @@ export interface ExtRelation {
 /**
  * A TextEnabled object can contain Textfragments in different languages and textVariants
  */
-export interface TextEnabled {
-  textFragments?: Textfragment[]
+export interface ITextEnabled {
+  textFragments?: ITextfragment[]
 }
 
 /**
- * This interface is used to make a class or object identifiable.
+ * This interface is used to make a class or object versionable, so that we can use it for versioning
  */
-export interface Identifyable {
+export interface IVersionable {
   uuid: string
   lastModified: Date
   created: Date
@@ -114,7 +113,7 @@ export interface Identifyable {
 /**
  * This interface is used to mark a class or object Valid
  */
-export interface Validity {
+export interface IValidity {
   valid: boolean
   validFrom: Date
 }
@@ -122,13 +121,13 @@ export interface Validity {
 /**
  * This interface is used to mark a class or object to be a member of a group
  */
-export interface Groupable {
+export interface IGroupable {
   group: string | undefined
 }
 
 /**
  * Every main part as TextElement, Code, IntRelations and ExtRelations will be a GlobalElement
  */
-export interface GlobalElement extends Identifyable, TextEnabled, Validity, Groupable {
+export interface IGlobalElement extends IVersionable, ITextEnabled, IGroupable {
   description?: string
 }
