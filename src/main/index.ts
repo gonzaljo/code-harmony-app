@@ -1,18 +1,40 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { app, shell, BrowserWindow, ipcMain, Menu, dialog } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle } from 'electron'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
+import { getUser } from './lib/userManager'
 
 function createWindow(): void {
+  const filePath = path.join(getUser().homeDirectory, '.code-harmony')
+
+  const size: Rectangle = {
+    width: 900,
+    height: 670,
+    x: 20,
+    y: 20
+  }
+
+  if (fs.existsSync(filePath)) {
+    const settings: string = fs.readFileSync(
+      path.join(getUser().homeDirectory, '.code-harmony'),
+      'utf-8'
+    )
+    const settingsJson = JSON.parse(settings)
+    size.width = settingsJson.width
+    size.height = settingsJson.height
+    size.x = settingsJson.x
+    size.y = settingsJson.y
+  }
+
   // Create the browser window.
   // https://www.electronjs.org/de/docs/latest/api/structures/browser-window-options
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    x: 1073,
-    y: 388,
+    width: size.width,
+    height: size.height,
+    x: size.x,
+    y: size.y,
     show: false,
     center: false,
     autoHideMenuBar: false,
@@ -61,6 +83,14 @@ function createWindow(): void {
     mainWindow.show()
   })
 
+  mainWindow.on('close', () => {
+    fs.writeFileSync(
+      path.join(getUser().homeDirectory, '.code-harmony'),
+      JSON.stringify(mainWindow.getBounds(), null, 2),
+      'utf-8'
+    )
+  })
+
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
@@ -77,6 +107,7 @@ function createWindow(): void {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools()
   }
+
 }
 
 // This method will be called when Electron has finished
@@ -94,7 +125,6 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
   ipcMain.on('save', (event, value) => {
     const pth = value.path
     const val = {
@@ -112,6 +142,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
