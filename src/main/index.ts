@@ -5,28 +5,12 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import { getUser } from './lib/userManager'
+import { getSettings } from './lib/settingsManager'
+import { save } from './lib/fileManager'
 
 function createWindow(): void {
-  const filePath = path.join(getUser().homeDirectory, '.code-harmony')
-
-  const size: Rectangle = {
-    width: 900,
-    height: 670,
-    x: 20,
-    y: 20
-  }
-
-  if (fs.existsSync(filePath)) {
-    const settings: string = fs.readFileSync(
-      path.join(getUser().homeDirectory, '.code-harmony'),
-      'utf-8'
-    )
-    const settingsJson = JSON.parse(settings)
-    size.width = settingsJson.width
-    size.height = settingsJson.height
-    size.x = settingsJson.x
-    size.y = settingsJson.y
-  }
+  
+  const size: Rectangle = getSettings()
 
   // Create the browser window.
   // https://www.electronjs.org/de/docs/latest/api/structures/browser-window-options
@@ -124,14 +108,9 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
+  // IPC save event
   ipcMain.on('save', (event, value) => {
-    const pth = value.path
-    const val = {
-      configuration: value.configuration,
-      application: null
-    }
-    fs.writeFileSync(pth, JSON.stringify(val, null, 2), 'utf-8')
+    save(event, value)
   })
 
   createWindow()
