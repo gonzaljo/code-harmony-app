@@ -3,6 +3,13 @@ import path from "path"
 import { getUser } from "./userManager"
 import fs from "fs"
 
+
+/**
+ * Retrieves the settings for the application.
+ * If a settings file exists, it reads the file and returns the settings from it.
+ * If the settings file does not exist, it returns default settings.
+ * @returns The settings object containing the width, height, x, and y values.
+ */
 export const getSettings = (): Rectangle => {
   const filePath = path.join(getUser().homeDirectory, '.code-harmony')
 
