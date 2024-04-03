@@ -8,5 +8,6 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "prettier.semi": false
+  "prettier.semi": false,
+  "liveServer.settings.port": 5501
 }

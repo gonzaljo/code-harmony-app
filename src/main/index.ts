@@ -2,14 +2,13 @@
 import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/Logo.png?asset'
 import fs from 'fs'
 import { getUser } from './lib/userManager'
 import { getSettings } from './lib/settingsManager'
 import { save } from './lib/fileManager'
 
 function createWindow(): void {
-  
   const size: Rectangle = getSettings()
 
   // Create the browser window.
@@ -91,7 +90,6 @@ function createWindow(): void {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools()
   }
-
 }
 
 // This method will be called when Electron has finished
@@ -120,8 +118,11 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-})
 
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(icon)
+  }
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

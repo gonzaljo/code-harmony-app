@@ -23,7 +23,6 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('files', {
       onSave: (value) => ipcRenderer.send('save', value)
     })
-
   } catch (error) {
     console.error(error)
   }

@@ -1,8 +1,7 @@
-import { Rectangle } from "electron"
-import path from "path"
-import { getUser } from "./userManager"
-import fs from "fs"
-
+import { Rectangle } from 'electron'
+import path from 'path'
+import { getUser } from './userManager'
+import fs from 'fs'
 
 /**
  * Retrieves the settings for the application.
