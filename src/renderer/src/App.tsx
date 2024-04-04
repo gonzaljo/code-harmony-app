@@ -7,11 +7,16 @@ import { useSelector } from 'react-redux'
 import { newConfiguration } from './store/configuration'
 import { useDispatch } from 'react-redux'
 import { codeHarmonyFactory } from '@shared/model/application'
-import { VscHome, VscCode, VscTools, VscSymbolConstant, VscTypeHierarchy } from 'react-icons/vsc'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import LayoutPage from './pages/LayoutPage'
+import ConfigurationPage from './pages/ConfigurationPage'
+import ApplicationPage from './pages/ApplicationPage'
+import CodesPage from './pages/CodesPage'
+import TextsPage from './pages/TextsPage'
+import ReferencesPage from './pages/ReferencesPage'
 
 function App(): JSX.Element {
   const selector = (state: RootState): IConfiguration => state.configuration
-  const configuration = useSelector(selector)
 
   const dispatch = useDispatch()
   const [path, setPath] = useState('')
@@ -26,61 +31,36 @@ function App(): JSX.Element {
     setPath(value)
   })
 
-  return (
-    <>
-      <main id="main" className="flex flex-col h-lvh p-0 m-0">
-        <header id="header" className="bg-sky-950 basis-12 shrink-0">
-          <h1 className="text-gray-400 py-1 text-lg mr-2">CodeHarmony</h1>
-        </header>
-        <section id="maincontent" className="flex flex-grow overflow-y-auto">
-          <nav id="sidebar" className="bg-sky-900 min-w-12 basis-12 pt-1">
-            <ul>
-              <li className='text-center pt-2'>
-                <a className="hover:cursor-pointer flex justify-center">
-                  <VscTools className="w-8 h-8 text-zinc-300" title="Configuration" />
-                </a>
-              </li>
-              <li className='text-center pt-2' title='Home'>
-                <a className="hover:cursor-pointer flex justify-center">
-                  <VscHome className="w-8 h-8 text-zinc-300" />
-                </a>
-              </li>
-              <li className='text-center pt-2' title='Codes'>
-                <a className="hover:cursor-pointer flex justify-center">
-                  <VscCode className="w-8 h-8 text-zinc-300" />
-                </a>
-              </li>
-              <li className='text-center pt-2' title='Texts'>
-                <a className="hover:cursor-pointer flex justify-center">
-                  <VscSymbolConstant className="w-8 h-8 text-zinc-300" />
-                </a>
-              </li>
-              <li className='text-center pt-2' title='Code References'>
-                <a className="hover:cursor-pointer flex justify-center" >
-                  <VscTypeHierarchy className="w-8 h-8 text-zinc-300" />
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <section id="content" className="overflow-y-auto flex-grow bg-slate-400 p-3">
-            {JSON.stringify(configuration, null, 2)
-              .split('\n')
-              .map((item, key) => {
-                return (
-                  <span key={key}>
-                    {item}
-                    <br />
-                  </span>
-                )
-              })}
-          </section>
-        </section>
-        <footer id="footer" className="bg-sky-950 text-white basis-6 shrink-0 align-middle">
-          <p className='text-sm pl-2'>© 2024 CodeHarmony</p>
-        </footer>
-      </main>
-    </>
-  )
+  const routes = createBrowserRouter([
+    {
+      path: '/',
+      element: <LayoutPage />,
+      children: [
+        {
+          path: '',
+          element: <ConfigurationPage />
+        },
+        {
+          path: 'app',
+          element: <ApplicationPage />
+        },
+        {
+          path: 'codes',
+          element: <CodesPage />
+        },
+        {
+          path: 'texts',
+          element: <TextsPage />
+        },
+        {
+          path: 'refs',
+          element: <ReferencesPage />
+        }
+      ]
+    }
+  ])
+
+  return <RouterProvider router={routes} />
 }
 
 export default App
