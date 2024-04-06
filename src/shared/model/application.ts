@@ -14,8 +14,8 @@ export const codeHarmonyFactory = (
   configuration: IConfiguration
 ): ICodeHarmony => {
   return {
-    path,
-    configuration
+    path: path,
+    configuration: configuration
   }
 }
 

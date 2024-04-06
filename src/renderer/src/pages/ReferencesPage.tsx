@@ -1,5 +1,5 @@
-import Content from '@renderer/components/Content';
-import Header from '@renderer/components/Header';
+import Content from '@renderer/components/Content'
+import Header from '@renderer/components/Header'
 
 export function ReferencesPage(): JSX.Element {
   return (
@@ -11,7 +11,7 @@ export function ReferencesPage(): JSX.Element {
         <p>References page</p>
       </Content>
     </>
-  );
+  )
 }
 
 export default ReferencesPage

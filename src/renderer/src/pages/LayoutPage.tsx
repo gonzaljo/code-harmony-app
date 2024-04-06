@@ -1,28 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react'
-import { RootState } from '@/store'
-import { IConfiguration, configurationFactory, groupFactory } from '@shared/model/configuration'
-import { useSelector } from 'react-redux'
-import { newConfiguration } from '../store/configuration'
+import { configurationFactory, groupFactory } from '@shared/model/configuration'
 import { useDispatch } from 'react-redux'
 import { codeHarmonyFactory } from '@shared/model/application'
 import Navigation from '@renderer/components/Navigation'
 import { Outlet } from 'react-router-dom'
+import { setCodeHarmonyState } from '@renderer/store/code-harmony'
+import { newConfiguration } from '@renderer/store/configuration'
 
 function LayoutPage(): JSX.Element {
-  const selector = (state: RootState): IConfiguration => state.configuration
-  const configuration = useSelector(selector)
-
   const dispatch = useDispatch()
   const [path, setPath] = useState('')
 
-  window.menu.onNewFile((value) => {
-    console.log('New file', value)
+  window.menu.onNewFile((value: string) => {
     const config = configurationFactory(true)
     config.groups.push(groupFactory('UI', 'Group for UI purpose'))
     dispatch({ type: newConfiguration.type, payload: config })
-    console.log('Save configuration ot file', value)
-    window.files.onSave(codeHarmonyFactory(value, config))
+    const ch = codeHarmonyFactory(value, config)
+    window.files.onSave(ch)
+    dispatch({ type: setCodeHarmonyState.type, payload: { path: value } })
     setPath(value)
   })
 

@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { getUser } from '../main/lib/userManager'
-import { ICodeHarmony } from '../shared/model/application'
 
 // Custom APIs for renderer
 const api = {}

@@ -1,5 +1,5 @@
-import Content from '@renderer/components/Content';
-import Header from '@renderer/components/Header';
+import Content from '@renderer/components/Content'
+import Header from '@renderer/components/Header'
 
 export function TextsPage(): JSX.Element {
   return (
@@ -11,7 +11,7 @@ export function TextsPage(): JSX.Element {
         <p>Text page</p>
       </Content>
     </>
-  );
+  )
 }
 
 export default TextsPage

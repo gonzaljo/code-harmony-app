@@ -1,5 +1,5 @@
-import Content from '@renderer/components/Content';
-import Header from '@renderer/components/Header';
+import Content from '@renderer/components/Content'
+import Header from '@renderer/components/Header'
 
 export function CodePage(): JSX.Element {
   return (
@@ -11,7 +11,7 @@ export function CodePage(): JSX.Element {
         <p>Code page</p>
       </Content>
     </>
-  );
+  )
 }
 
 export default CodePage

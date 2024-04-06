@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import configuration from './configuration'
+import codeHarmony from './code-harmony'
 
 const store = configureStore({
   reducer: {
+    codeHarmony: codeHarmony,
     configuration: configuration
   }
 })

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle, session } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/Logo.png?asset'
