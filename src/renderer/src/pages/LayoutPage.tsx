@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { configurationFactory, groupFactory } from '@shared/model/configuration'
 import { useDispatch } from 'react-redux'
 import { codeHarmonyFactory } from '@shared/model/application'
@@ -7,20 +7,27 @@ import Navigation from '@renderer/components/Navigation'
 import { Outlet } from 'react-router-dom'
 import { setCodeHarmonyState } from '@renderer/store/code-harmony'
 import { newConfiguration } from '@renderer/store/configuration'
+import { useSelector } from 'react-redux'
+import { RootState } from '@renderer/store'
+import storeFile from '@renderer/procedures/storeFile'
 
 function LayoutPage(): JSX.Element {
   const dispatch = useDispatch()
-  const [path, setPath] = useState('')
+  const path = useSelector((state: RootState) => state.codeHarmony.path)
+  const configuration = useSelector((state: RootState) => state.configuration)
 
   window.menu.onNewFile((value: string) => {
     const config = configurationFactory(true)
     config.groups.push(groupFactory('UI', 'Group for UI purpose'))
     dispatch({ type: newConfiguration.type, payload: config })
-    const ch = codeHarmonyFactory(value, config)
-    window.files.onSave(ch)
     dispatch({ type: setCodeHarmonyState.type, payload: { path: value } })
-    setPath(value)
   })
+
+  useEffect(() => {
+    if (path === '') return
+    const ch = codeHarmonyFactory(path, configuration)
+    storeFile()
+  }, [path])
 
   return (
     <>

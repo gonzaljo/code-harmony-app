@@ -2,25 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-
 table.datatable {
   @apply border-collapse border-0;
 }
 
 table.datatable thead tr th {
-  @apply bg-zinc-600 text-white border-y-2  p-3;
+  @apply text-black border-b  p-3 border-zinc-800;
 }
 
 table.datatable tbody tr {
   @apply text-black border-b border-zinc-300;
 }
 
-table.datatable tbody tr.even {
-  @apply text-black  hover:bg-zinc-400;
-}
-
-table.datatable tbody tr.odd {
-  @apply bg-zinc-200  hover:bg-zinc-400;
+table.datatable tbody tr {
+  @apply text-black  hover:bg-zinc-400 odd:bg-zinc-200;
 }
 
 table.datatable tbody tr td {

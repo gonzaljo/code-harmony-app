@@ -1,8 +1,9 @@
+import storeFile from '@renderer/procedures/storeFile'
 import { RootState } from '@renderer/store'
-import { setTextVariants } from '@renderer/store/configuration'
+import { checkTextVariants, setTextVariants } from '@renderer/store/configuration'
 import { ITextVariant } from '@shared/model/configuration'
-import { useState } from 'react'
-import { VscEdit, VscNewFile,  VscSave, VscTrash } from 'react-icons/vsc'
+import { useEffect, useState } from 'react'
+import { VscEdit, VscNewFile, VscSave, VscTrash } from 'react-icons/vsc'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 
@@ -11,12 +12,18 @@ function Variants(): JSX.Element {
   const dispatch = useDispatch()
 
   const [variant, setVariant] = useState<ITextVariant | undefined>(undefined)
+  const [errorText, setErrorText] = useState<string>('')
+
+  useEffect(() => {
+    storeFile()
+  }, [variants]);
 
   const handleEdit = (id: string): void => {
     variants
       .filter((variant) => variant.id === id)
       .forEach((variant) => {
         setVariant(variant)
+        setErrorText('')
       })
   }
 
@@ -29,15 +36,50 @@ function Variants(): JSX.Element {
     }
     document.getElementById('varId')?.focus()
     setVariant(newVariant)
+    setErrorText('')
   }
 
   const saveVariantHandler = (): void => {
     if (variant === undefined) return
+    if (variant.id === '') return
+    if (variant.length < 1) return
 
-    const newVariants = variants.filter((v) => v.id !== variant.id)
+    let newVariants = variants.filter((v) => v.id !== variant.id)
+    if (variant.default) {
+      newVariants = newVariants.map((v) => {
+        return { ...v, default: false }
+      })
+    }
+
     newVariants.push(variant)
+
+    try {
+      checkTextVariants(newVariants)
+    } catch (e) {
+      setErrorText(e.message)
+      return
+    }
+
+    newVariants.sort((a, b) => (a.id < b.id ? -1 : 1))
     dispatch(setTextVariants(newVariants))
     setVariant(undefined)
+    setErrorText('')
+  }
+
+  const removeVariant = (): void => {
+    if (variant === undefined) return
+
+    const newVariants = variants.filter((v) => v.id !== variant.id)
+    try {
+      checkTextVariants(newVariants)
+    } catch (e) {
+      setErrorText(e.message)
+      return
+    }
+
+    dispatch(setTextVariants(newVariants))
+    setVariant(undefined)
+    setErrorText('')
   }
 
   const changeHander = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -89,19 +131,13 @@ function Variants(): JSX.Element {
         </thead>
         <tbody>
           {variants.map((variant, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'odd' : 'even'}>
+            <tr key={index}>
               <td>
                 <button
                   className="bg-zinc-950 hover:bg-zinc-300 text-white font-bold py-1 px-2 rounded ml-2"
                   onClick={() => handleEdit(variant.id)}
                 >
                   <VscEdit />
-                </button>
-                <button
-                  className="bg-zinc-950 hover:bg-zinc-300 text-white font-bold py-1 px-2 rounded ml-1"
-                  onClick={() => handleEdit(variant.id)}
-                >
-                  <VscTrash />
                 </button>
               </td>
               <td>{variant.id}</td>
@@ -138,14 +174,18 @@ function Variants(): JSX.Element {
               </tr>
             </thead>
             <tbody>
-              <tr className="odd">
+              <tr>
                 <td>
                   <input
                     id="varId"
                     type="text"
                     value={variant.id}
                     onChange={(event) => changeHander(event)}
+                    required
+                    pattern='[a-zA-Z0-9]{3,30}'
+                    className="invalid:[:not(:focus)]border-red-500 border-2 peer"
                   />
+                  <span className="< peer-[:focus:invalid]:block hidden text-sm text-red-500">ID must be 3 to 30 characters</span>
                 </td>
                 <td>
                   <input
@@ -161,18 +201,22 @@ function Variants(): JSX.Element {
                     type="number"
                     value={variant.length}
                     onChange={(event) => changeHander(event)}
+                    required
+                    min={1}
+                    className='invalid:[:not(:focus)]border-red-500 border-2 peer'
                   />
+                  <span className="< peer-[:focus:invalid]:block hidden text-sm text-red-500">Must be a positive number &gt; 0</span>
                 </td>
                 <td className="text-center">
                   <input
                     id="default"
                     type="checkbox"
-                    value={variant.default + ''}
+                    checked={variant.default}
                     onChange={(event) => changeHander(event)}
                   />
                 </td>
               </tr>
-              <tr className="even">
+              <tr>
                 <td>
                   <button
                     className="bg-indigo-950 hover:bg-indigo-300 text-white font-bold py-1 px-2 rounded ml-2"
@@ -182,12 +226,13 @@ function Variants(): JSX.Element {
                   </button>
                   <button
                     className="bg-indigo-950 hover:bg-indigo-300 text-white font-bold py-1 px-2 rounded ml-1"
-                    onClick={() => setVariant(undefined)}
+                    onClick={() => removeVariant()}
                   >
                     <VscTrash />
                   </button>
                 </td>
-                <td colSpan={3}>&nbsp;</td>
+                <td>{errorText && <span className="text-lg font-bold text-red-500">{errorText}</span>}</td>
+                <td colSpan={2}>&nbsp;</td>
               </tr>
             </tbody>
           </table>
