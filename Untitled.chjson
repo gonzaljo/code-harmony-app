@@ -1,0 +1,54 @@
+{
+  "configuration": {
+    "textVariants": [
+      {
+        "id": "short",
+        "mimeType": "text/plain",
+        "length": 20,
+        "default": true
+      },
+      {
+        "id": "long",
+        "mimeType": "text/plain",
+        "length": 200,
+        "default": false
+      }
+    ],
+    "textConfigs": [
+      {
+        "id": "text",
+        "format": ".{3,20}",
+        "message": "For simple text"
+      },
+      {
+        "id": "mesaage",
+        "format": "\n{5}",
+        "message": "For messages used in the application"
+      }
+    ],
+    "groups": [],
+    "locales": [
+      {
+        "id": "de_CH",
+        "description": "German (Switzerland)",
+        "defaultLocale": true
+      },
+      {
+        "id": "fr_CH",
+        "description": "French (Switzerland)",
+        "defaultLocale": false
+      },
+      {
+        "id": "it_CH",
+        "description": "Italian (Switzerland)",
+        "defaultLocale": false
+      },
+      {
+        "id": "en_US",
+        "description": "English (United States)",
+        "defaultLocale": false
+      }
+    ]
+  },
+  "application": null
+}

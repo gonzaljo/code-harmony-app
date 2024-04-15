@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, dialog, Rectangle } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/Logo.png?asset'
 import fs from 'fs'
 import { getUser } from './lib/userManager'
-import { getSettings } from './lib/settingsManager'
-import { save } from './lib/fileManager'
+import { Settings, getSettings } from './lib/settingsManager'
+import { open, save } from './lib/fileManager'
+
+const settings: Settings = getSettings()
+const size: Rectangle = settings.reactangle
 
 function createWindow(): void {
-  const size: Rectangle = getSettings()
 
   // Create the browser window.
   // https://www.electronjs.org/de/docs/latest/api/structures/browser-window-options
@@ -42,13 +44,42 @@ function createWindow(): void {
               .showSaveDialog({
                 defaultPath: __dirname,
                 title: 'New Code Harmony App',
+
                 filters: [{ name: 'Code Harmony', extensions: ['chjson'] }]
               })
               .then((result) => {
                 console.log(result.filePath)
+                if (result.filePath) settings.files.push(result.filePath)
                 mainWindow.webContents.send('new-file', result.filePath)
               })
           }
+        },
+        {
+          label: 'Open',
+          click: () => {
+            dialog
+              .showOpenDialog({
+                defaultPath: __dirname,
+                title: 'Open Code Harmony App',
+                filters: [{ name: 'Code Harmony', extensions: ['chjson'] }]
+              })
+              .then((result) => {
+                console.log(result.filePaths)
+                const ch = open(result.filePaths[0])
+                if (result.filePaths[0]) settings.files.push(result.filePaths[0])
+                mainWindow.webContents.send('open-file', ch)
+              })
+          }
+        },
+        {
+          label: 'Recent',
+          submenu: (settings.files || []).map((file) => ({
+            label: file,
+            click: () => {
+              const ch = open(file)
+              mainWindow.webContents.send('open-file', ch)
+            }
+          }))
         },
         {
           label: 'Exit',
@@ -67,9 +98,14 @@ function createWindow(): void {
   })
 
   mainWindow.on('close', () => {
+    const setts: Settings = {
+      reactangle: mainWindow.getBounds(),
+      files: settings.files
+    }
+
     fs.writeFileSync(
       path.join(getUser().homeDirectory, '.code-harmony'),
-      JSON.stringify(mainWindow.getBounds(), null, 2),
+      JSON.stringify(setts, null, 2),
       'utf-8'
     )
   })

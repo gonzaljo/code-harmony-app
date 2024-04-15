@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { configurationFactory, groupFactory } from '@shared/model/configuration'
 import { useDispatch } from 'react-redux'
-import { codeHarmonyFactory } from '@shared/model/application'
+import { ICodeHarmony, codeHarmonyFactory } from '@shared/model/application'
 import Navigation from '@renderer/components/Navigation'
 import { Outlet } from 'react-router-dom'
 import { setCodeHarmonyState } from '@renderer/store/code-harmony'
@@ -21,6 +21,13 @@ function LayoutPage(): JSX.Element {
     config.groups.push(groupFactory('UI', 'Group for UI purpose'))
     dispatch({ type: newConfiguration.type, payload: config })
     dispatch({ type: setCodeHarmonyState.type, payload: { path: value } })
+  })
+
+  window.menu.onOpenFile((content: ICodeHarmony ) => {
+    const path = content.path
+    const config = content.configuration
+    dispatch({ type: setCodeHarmonyState.type, payload: {path: path} })
+    dispatch({ type: newConfiguration.type, payload: config })
   })
 
   useEffect(() => {
